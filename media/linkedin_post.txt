@@ -1,0 +1,25 @@
+What if your glasses could read your dog?
+
+Dogs talk constantly through posture, tail and ears, and through pitch and rhythm. We usually catch only part of it. So I built DogSense HUD, a Symbolic Synapse prototype for the Rokid RV101 glasses that reads both channels at once and shows what it measures on the green heads-up display.
+
+How it works:
+🦴 Body language: a pose model (YOLO26n-pose, fine-tuned on 8,476 dog images) tracks 24 keypoints per dog. Everything is measured in the dog's own body frame, so my head can move and the reading still holds.
+🔊 Sound: pitch, harmonicity and the rhythm of barks. An audio transformer checks every sound first, so my own voice is ignored.
+🧠 Reasoning: explicit, explainable rules decide, not a black box. A play bow overrides a growl, and stiff + leaning forward + low growl triggers a warning. Every state on the HUD traces back to the cues that fired it.
+
+The part I'm proudest of is the testing. I filmed my own dogs through the glasses and let reality grade it:
+• Dogs facing me behind a gate were tracked in only 35% of frames. A second detection stage took that to 79%.
+• A lying-down dog was read as a "play bow". Fixed.
+• My "hey, hey, hey!" telling the dogs off was logged as barking. That one stung, and it led to the voice filter.
+10 issues found in the field, 10 fixed.
+
+It's honest about its limits: it reports what it saw and heard, not what a dog is thinking. The behaviour models still need fine-tuning on labelled real-world footage, and that's the next step.
+
+Measured, never imagined.
+
+The full code, trained models, a 22-page technical document and the field-test footage are open source:
+👉 https://github.com/itumelengj-debug/dogsense-hud
+
+Built and trained locally on an RTX 3090: Python server, Kotlin glasses app.
+
+#AugmentedReality #ComputerVision #AI #NeuroSymbolicAI #SmartGlasses #Rokid #OpenSource #MachineLearning #Dogs #SymbolicSynapse
