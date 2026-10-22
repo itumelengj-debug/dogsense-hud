@@ -518,9 +518,12 @@ class Renderer:
         tag = "INTELLIGENCE THROUGH LOGIC & LEARNING"
         ft = self.F.get("sans", 20, 500)
         draw_text_fade(img, ((W - d.textlength(tag, font=ft)) / 2, 718), [(tag, ft, CYAN)], fade(t, s + 1.1))
-        cta = "DogSense HUD  ·  open-source repository  ·  link in the post"
-        fc = self.F.get("mono", 24, 500)
-        draw_text_fade(img, ((W - d.textlength(cta, font=fc)) / 2, 830), [(cta, fc, WHITE)], fade(t, s + 1.6))
+        cta = "github.com/itumelengj-debug/dogsense-hud"
+        fc = self.F.get("mono", 30, 500)
+        lab = "OPEN SOURCE  ·  AGPL-3.0"
+        fl = self.F.get("sans", 18, 500)
+        draw_text_fade(img, ((W - d.textlength(lab, font=fl)) / 2, 800), [(lab, fl, (120, 140, 160))], fade(t, s + 1.5))
+        draw_text_fade(img, ((W - d.textlength(cta, font=fc)) / 2, 836), [(cta, fc, WHITE)], fade(t, s + 1.7))
 
 
 def cv2_spec(x):
