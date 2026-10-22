@@ -1,0 +1,14 @@
+*What if your glasses could read your dog?* 🐕
+
+Meet *DogSense HUD*, my new Symbolic Synapse prototype for the Rokid RV101 glasses. It watches a dog's posture and listens to its barks, then shows what it picks up on the glasses' display.
+
+◈ Tracks 24 points on the dog's body
+◈ Reads pitch and rhythm in the barks (and ignores my voice)
+◈ Explains every reading. No black box
+
+Tested on my own dogs, including through the gate 😄
+
+_Measured, never imagined._
+
+Code, video and the full write-up:
+https://github.com/itumelengj-debug/dogsense-hud
