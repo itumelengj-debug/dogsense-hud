@@ -1,0 +1,13 @@
+torch>=2.4          # install the CUDA build: pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu124
+torchaudio>=2.4
+ultralytics>=8.4    # YOLO26-pose
+numpy
+scipy
+opencv-python
+soundfile
+transformers        # AST sound-source gate (rejects the wearer's voice); model ~350 MB, downloaded once
+fastapi
+uvicorn[standard]
+websockets
+truststore          # only needed behind TLS-inspecting proxies
+pytest

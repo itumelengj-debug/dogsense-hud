@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DogSense HUD</title>
+<style>
+  :root { --g: #3cff3c; --dim: #1f8a1f; --bg: #000; }
+  body { margin: 0; background: var(--bg); color: var(--g); font: 14px ui-monospace, Consolas, monospace; }
+  header { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--dim); }
+  button, label.btn { background: none; color: var(--g); border: 1px solid var(--g); padding: 6px 12px; font: inherit; cursor: pointer; }
+  button:disabled { opacity: .4; cursor: default; }
+  #status { margin-left: auto; color: var(--dim); }
+  #stage { position: relative; max-width: 1280px; margin: 12px auto; padding: 0 16px; }
+  video, canvas { width: 100%; display: block; }
+  video { filter: brightness(.55); }
+  canvas { position: absolute; inset: 0 16px; width: calc(100% - 32px); height: 100%; pointer-events: none; }
+  input[type=file] { display: none; }
+</style>
+</head>
+<body>
+<header>
+  <button id="cam">Start webcam + mic</button>
+  <label class="btn">Open video file<input id="file" type="file" accept="video/*"></label>
+  <label><input id="skel" type="checkbox"> skeleton</label>
+  <span id="status">idle</span>
+</header>
+<div id="stage">
+  <video id="v" playsinline muted></video>
+  <canvas id="c"></canvas>
+</div>
+<script>
+const v = document.getElementById('v'), c = document.getElementById('c'), ctx = c.getContext('2d');
+const statusEl = document.getElementById('status');
+const EDGES = [0,1,1,2,6,7,7,8,3,4,4,5,9,10,10,11,2,22,8,22,5,12,11,12,22,12,12,13,22,23,23,17,17,16,16,20,16,21,20,14,21,15,14,18,15,19];
+let ws, tel = null, inFlight = false, sentAt = 0, rtt = -1, grab = document.createElement('canvas');
+
+function connect() {
+  ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`);
+  ws.binaryType = 'arraybuffer';
+  ws.onopen = () => { statusEl.textContent = 'link ok'; inFlight = false; };
+  ws.onclose = () => { statusEl.textContent = 'link lost, retrying'; setTimeout(connect, 2000); };
+  ws.onmessage = e => { const t = JSON.parse(e.data);
+    if ('latency_ms' in t) { inFlight = false; const r = performance.now() - sentAt; rtt = rtt < 0 ? r : 0.8 * rtt + 0.2 * r; }
+    tel = t; };
+}
+connect();
+
+// Video frames -> 0x01 | f64 t | f32 roll | jpeg, one in flight at a time.
+function pump() {
+  if (ws.readyState === 1 && !inFlight && v.videoWidth && !v.paused) {
+    grab.width = v.videoWidth; grab.height = v.videoHeight;
+    grab.getContext('2d').drawImage(v, 0, 0);
+    inFlight = true;
+    grab.toBlob(async b => {
+      const jpg = new Uint8Array(await b.arrayBuffer());
+      const msg = new Uint8Array(13 + jpg.length), dv = new DataView(msg.buffer);
+      msg[0] = 1; dv.setFloat64(1, Date.now() / 1000, true); dv.setFloat32(9, 0, true); msg.set(jpg, 13);
+      if (ws.readyState === 1) { sentAt = performance.now(); ws.send(msg); } else inFlight = false;
+    }, 'image/jpeg', 0.75);
+  }
+  setTimeout(pump, 66);
+}
+pump();
+
+// Audio -> 0x02 | f32 speechProb | PCM16 16 kHz, 100 ms chunks.
+async function startAudio(stream) {
+  const ac = new AudioContext({ sampleRate: 16000 });
+  const src = stream ? ac.createMediaStreamSource(stream) : ac.createMediaElementSource(v);
+  const proc = ac.createScriptProcessor(2048, 1, 1);
+  let acc = [];
+  proc.onaudioprocess = e => {
+    const x = e.inputBuffer.getChannelData(0);
+    for (let i = 0; i < x.length; i++) acc.push(x[i]);
+    while (acc.length >= 1600) {
+      const chunk = acc.splice(0, 1600), msg = new ArrayBuffer(5 + 3200), dv = new DataView(msg);
+      dv.setUint8(0, 2); dv.setFloat32(1, 0, true);
+      chunk.forEach((s, i) => dv.setInt16(5 + 2 * i, Math.max(-1, Math.min(1, s)) * 32767, true));
+      if (ws.readyState === 1) ws.send(msg);
+    }
+  };
+  src.connect(proc); proc.connect(ac.destination);
+  if (!stream) src.connect(ac.destination); // keep file audio audible
+}
+
+document.getElementById('cam').onclick = async () => {
+  try {
+    const s = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+    v.srcObject = s; await v.play(); startAudio(s);
+    document.getElementById('cam').disabled = true;
+  } catch (e) { statusEl.textContent = 'camera/mic blocked: ' + e.message; }
+};
+document.getElementById('file').onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  v.srcObject = null; v.src = URL.createObjectURL(f); v.loop = true; v.muted = false;
+  await v.play(); startAudio(null);
+};
+
+const bar = (x, n = 10) => { const k = Math.round(Math.max(0, Math.min(1, x)) * n); return '[' + '|'.repeat(k) + '.'.repeat(n - k) + ']'; };
+const vbar = (x, n = 3) => { const k = Math.round(Math.min(1, Math.abs(x)) * n);
+  return '[' + (x < 0 ? '- '.repeat(k) : '').padStart(2 * n) + '|' + (x > 0 ? ' +'.repeat(k) : '').padEnd(2 * n) + ']'; };
+
+function draw() {
+  const r = v.getBoundingClientRect();
+  if (c.width !== Math.round(r.width) || c.height !== Math.round(r.height)) { c.width = r.width; c.height = r.height; }
+  const w = c.width, h = c.height, u = Math.max(h / 480, 0.6);
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = ctx.strokeStyle = '#3cff3c';
+  ctx.font = `bold ${20 * u}px Consolas, monospace`;
+  if (!tel) { ctx.fillText('DOGSENSE  ' + statusEl.textContent, 16 * u, 36 * u); return requestAnimationFrame(draw); }
+  const blink = Math.floor(Date.now() / 300) % 2 === 0;
+  if (tel.box && (!tel.alert || blink)) {
+    const [x1, y1, x2, y2] = [tel.box[0] * w, tel.box[1] * h, tel.box[2] * w, tel.box[3] * h], L = Math.max((x2 - x1) / 6, 14);
+    ctx.lineWidth = (tel.alert ? 6 : 3) * u; ctx.beginPath();
+    for (const [cx, cy, sx, sy] of [[x1, y1, 1, 1], [x2, y1, -1, 1], [x1, y2, 1, -1], [x2, y2, -1, -1]]) {
+      ctx.moveTo(cx + sx * L, cy); ctx.lineTo(cx, cy); ctx.lineTo(cx, cy + sy * L);
+    }
+    ctx.stroke();
+  }
+  if (document.getElementById('skel').checked && tel.kpts) {
+    ctx.strokeStyle = '#1f8a1f'; ctx.lineWidth = 2; ctx.beginPath();
+    for (let i = 0; i < EDGES.length; i += 2) {
+      const a = tel.kpts[EDGES[i]], b = tel.kpts[EDGES[i + 1]];
+      if (a[2] > .3 && b[2] > .3) { ctx.moveTo(a[0] * w, a[1] * h); ctx.lineTo(b[0] * w, b[1] * h); }
+    }
+    ctx.stroke(); ctx.strokeStyle = '#3cff3c';
+  }
+  ctx.fillText(`AROUSAL ${bar(tel.arousal)} ${Math.round(tel.arousal * 100)}%`, 16 * u, 32 * u);
+  ctx.fillText(`VALENCE ${vbar(tel.valence)}`, 16 * u, 60 * u);
+  ctx.font = `${15 * u}px Consolas, monospace`;
+  if (tel.trigger) ctx.fillText('TRIGGER: ' + tel.trigger, 16 * u, 86 * u);
+  const m = tel.morph.calibrated ? `${tel.morph.ears} ears / ${tel.morph.tail} tail` : 'calibrating';
+  ctx.fillStyle = '#1f8a1f';
+  ctx.fillText(`${m}  ${rtt < 0 ? '--' : Math.round(rtt) + 'ms rtt'}`, 16 * u, h - 100 * u);
+  ctx.fillText(tel.cues.join(' | '), 22 * u, h - 16 * u);
+  ctx.fillStyle = '#3cff3c'; ctx.font = `bold ${20 * u}px Consolas, monospace`;
+  const top = h - 84 * u;
+  if (tel.alert) {
+    ctx.lineWidth = 3 * u; ctx.strokeRect(8 * u, top, w - 16 * u, 76 * u);
+    ctx.fillText('ALERT: ' + tel.state, 22 * u, top + 28 * u);
+    ctx.fillText(tel.alert, 22 * u, top + 54 * u);
+  } else {
+    ctx.fillText('STATE: ' + tel.state + (tel.detail ? ` (${tel.detail})` : ''), 22 * u, top + 28 * u);
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>

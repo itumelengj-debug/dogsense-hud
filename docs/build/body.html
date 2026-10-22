@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 24mm 22mm 22mm 22mm; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; font-family: Poppins, sans-serif; font-size: 10.4pt; line-height: 1.62; color: #1d2433; }
+  h2 { display: flex; align-items: center; gap: 4mm; font-size: 20pt; font-weight: 700; margin: 0 0 6mm; color: #121a2a;
+       page-break-after: avoid; break-after: avoid; }
+  h2 .hex { flex: none; width: 10mm; height: 11.4mm; display: grid; place-items: center; color: #fff; font-size: 9.5pt; font-weight: 600;
+            background: linear-gradient(160deg, #4a82c8, #2f5fa6); clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
+  h2 .rule { flex: 1; height: .9mm; background: linear-gradient(90deg, #53c9e0, rgba(83,201,224,0)); }
+  h3 { font-size: 12.5pt; font-weight: 600; color: #2f5fa6; margin: 6mm 0 2mm; break-after: avoid; }
+  section { margin-bottom: 12mm; }
+  section.newpage { break-before: page; }
+  p { margin: 0 0 3.2mm; }
+  ul { margin: 0 0 3.5mm; padding-left: 6mm; } li { margin-bottom: 1.5mm; }
+  b, strong { font-weight: 600; }
+  code { font-family: Consolas, monospace; font-size: 9pt; background: #eaf1fa; padding: .2mm 1.2mm; border-radius: 1mm; }
+  pre { font-family: Consolas, monospace; font-size: 8.6pt; background: #0f1828; color: #cfe3f5; padding: 4mm 5mm; border-radius: 1.5mm;
+        border-left: 1mm solid #53c9e0; white-space: pre-wrap; margin: 0 0 4mm; break-inside: avoid; line-height: 1.5; }
+  .lede { border-left: 1mm solid #53c9e0; padding: 1mm 0 1mm 6mm; font-size: 12pt; color: #3d4757; line-height: 1.65; margin: 0 0 9mm; }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 5mm; font-size: 9pt; break-inside: auto; }
+  thead th { background: #0f1828; color: #fff; text-align: left; font-weight: 600; padding: 3mm 3.5mm; border-bottom: .7mm solid #53c9e0; }
+  td { padding: 2.6mm 3.5mm; border-bottom: .25mm solid #cfdbe9; vertical-align: top; line-height: 1.5; }
+  tbody tr:nth-child(even) td { background: #eaf1fa; }
+  tr { break-inside: avoid; }
+  .pill { display: inline-block; border: .3mm solid #3f6fb8; color: #2f5fa6; border-radius: 4mm; padding: 0 3mm; font-size: 8.6pt; }
+  .toc { width: 100%; border-collapse: collapse; font-size: 11pt; }
+  .toc td { padding: 3mm 0; background: none !important; border-bottom: .25mm solid #cfdbe9; }
+  .toc td:first-child { width: 10mm; color: #3f6fb8; font-weight: 600; }
+  .toc td:last-child { width: 10mm; text-align: right; color: #6b7686; }
+  .note { background: #eaf1fa; border-left: 1mm solid #3f6fb8; padding: 3.5mm 5mm; margin: 0 0 5mm; break-inside: avoid; }
+  .note.warn { background: #fff4e0; border-color: #d98c1f; }
+  .note b:first-child { color: #2f5fa6; } .note.warn b:first-child { color: #a5620c; }
+  figure { margin: 0 0 5mm; break-inside: avoid; } figure img { width: 100%; border-radius: 1.5mm; display: block; }
+  figcaption { font-size: 8.6pt; color: #6b7686; margin-top: 2mm; }
+  /* architecture diagram */
+  .arch { display: grid; grid-template-columns: 1fr 9mm 1.35fr; gap: 0; align-items: stretch; margin: 2mm 0 3mm; font-size: 8.6pt; break-inside: avoid; }
+  .col { border: .35mm solid #3f6fb8; border-radius: 2mm; padding: 3mm; background: #f5f9fd; }
+  .col h4 { margin: 0 0 2mm; font-size: 9.5pt; color: #2f5fa6; font-weight: 600; }
+  .blk { background: #fff; border: .25mm solid #cfdbe9; border-radius: 1.2mm; padding: 1.6mm 2.4mm; margin-bottom: 1.6mm; line-height: 1.4; }
+  .blk:last-child { margin-bottom: 0; }
+  .blk.dark { background: #0f1828; color: #cfe3f5; border-color: #0f1828; }
+  .arrows { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 12mm; color: #3f6fb8; font-size: 7.5pt; text-align: center; line-height: 1.2; }
+  .arrows span { font-size: 15pt; line-height: 1; }
+  .kv td:first-child { width: 38mm; font-weight: 500; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+</style>
+</head>
+<body>
+
+<section>
+  <h2><span class="hex">◆</span>Contents<span class="rule"></span></h2>
+  <div class="lede">DogSense HUD is Symbolic Synapse's real-time canine behaviour display for Rokid glasses. It combines a dog's posture and movement with its vocalisations, and shows the result on the monochrome-green HUD. The system reports what it measured and which rule fired. It does not claim to translate what a dog is thinking.</div>
+  <table class="toc"><tbody>
+    <tr><td>1</td><td>Document control</td><td></td></tr>
+    <tr><td>2</td><td>Purpose and design principle</td><td></td></tr>
+    <tr><td>3</td><td>System architecture</td><td></td></tr>
+    <tr><td>4</td><td>Visual kinematics</td><td></td></tr>
+    <tr><td>5</td><td>Bioacoustic analysis</td><td></td></tr>
+    <tr><td>6</td><td>Neuro-symbolic fusion</td><td></td></tr>
+    <tr><td>7</td><td>The monochrome HUD</td><td></td></tr>
+    <tr><td>8</td><td>Models and training results</td><td></td></tr>
+    <tr><td>9</td><td>Running the system</td><td></td></tr>
+    <tr><td>10</td><td>Interfaces and file layout</td><td></td></tr>
+    <tr><td>11</td><td>Verification</td><td></td></tr>
+    <tr><td>12</td><td>Field test with Rokid glasses footage</td><td></td></tr>
+    <tr><td>13</td><td>Limitations and open issues</td><td></td></tr>
+    <tr><td>14</td><td>Next steps</td><td></td></tr>
+  </tbody></table>
+</section>
+
+<section class="newpage">
+  <h2><span class="hex">1</span>Document control<span class="rule"></span></h2>
+  <p>This is an official Symbolic Synapse document for DogSense server 0.1 · glasses app 0.1.</p>
+  <table class="kv">
+    <thead><tr><th>Field</th><th>Entry</th></tr></thead>
+    <tbody>
+      <tr><td>Document</td><td>DogSense HUD: technical documentation of the canine behaviour telemetry prototype</td></tr>
+      <tr><td>Issued by</td><td>Symbolic Synapse</td></tr>
+      <tr><td>Audience</td><td>Engineers continuing the build, and reviewers assessing the prototype</td></tr>
+      <tr><td>Document version</td><td>1.4, 22 October 2026. Version 1.1 added the first field test (section 12). Version 1.2 added the head-on and gate tests (section 12.3), the two-stage detector and the fixes they led to. Version 1.3 added the re-run of the first clip with the two-stage detector (28 % → 56 % tracked). Version 1.4 adds the sound-source gate that filters the wearer's voice (section 12.4) and the audio fixes found with it.</td></tr>
+      <tr><td>Software covered</td><td>DogSense server 0.1 (Python) · glasses app 0.1 (Android, Kotlin)</td></tr>
+      <tr><td>Hardware used</td><td>Training and inference on an NVIDIA GeForce RTX 3090 (24 GB); target display Rokid glasses</td></tr>
+      <tr><td>Status</td><td><span class="pill">Prototype · for review</span></td></tr>
+    </tbody>
+  </table>
+  <p>The document describes the solution as it stands. Every figure in section 8 was measured on this build. Re-issue with a new version number when the software, the models or the intended use change.</p>
+</section>
+
+<section>
+  <h2><span class="hex">2</span>Purpose and design principle<span class="rule"></span></h2>
+  <p>Dogs communicate mainly through <b>kinematics</b> (posture, tail-wag asymmetry, ear carriage, weight distribution) together with <b>acoustics</b> (pitch, inter-bark interval, harmonic-to-noise ratio). Neither channel is enough alone. A high-pitched bark can mean play solicitation or barrier frustration, depending on the body posture that goes with it.</p>
+  <p>DogSense pairs the glasses' camera and microphone with a local GPU server. It extracts both channels, fuses them with explicit rules, and projects behavioural telemetry onto the wearer's HUD in real time.</p>
+  <div class="note"><b>Design principle.</b> The HUD shows measurements and the rule that fired, such as "Stiff + forward + low growl", together with a behavioural state. Every state can be traced back to observable cues. The network outputs are evidence for the rules, not the final verdict.</div>
+  <p>Throughout the build, three rules from the original concept were treated as requirements:</p>
+  <ul>
+    <li><b>Never interpret sound alone.</b> Audio is always read alongside posture, and a play bow overrides a growl.</li>
+    <li><b>Compare against this dog, not a universal threshold.</b> Ear and posture cues are scored as deviations from a per-dog baseline.</li>
+    <li><b>Make urgency readable without colour.</b> The waveguide is monochrome green, so urgency is carried by geometry and line weight.</li>
+  </ul>
+</section>
+
+<section class="newpage">
+  <h2><span class="hex">3</span>System architecture<span class="rule"></span></h2>
+  <p>Heavy vision and audio models would hit the glasses' thermal and battery limits within minutes. The workload is therefore split: the glasses capture and display, and a local GPU server on the same Wi-Fi does all the inference.</p>
+  <div class="arch">
+    <div class="col">
+      <h4>Rokid glasses · Android app</h4>
+      <div class="blk"><b>Camera</b>: CameraX, 720p, JPEG at ≤ 15 fps</div>
+      <div class="blk"><b>Microphone</b>: AudioRecord, 16 kHz mono PCM, 100 ms chunks, unprocessed source</div>
+      <div class="blk"><b>Gravity sensor</b>: head roll for ego-motion compensation</div>
+      <div class="blk"><b>SpeechGate</b>: on-device "reverse VAD" that flags the wearer's own voice</div>
+      <div class="blk dark"><b>HudView</b>: Canvas, black = transparent; reticle, gauges and caption</div>
+    </div>
+    <div class="arrows"><div><span>→</span><br>binary<br>WebSocket</div><div><span>←</span><br>JSON<br>telemetry</div></div>
+    <div class="col">
+      <h4>Local GPU server · Python, FastAPI</h4>
+      <div class="blk"><b>Detection</b>: YOLO26n-pose fine-tuned on Dog-Pose (24 keypoints), plus a COCO YOLO26s second stage for dogs the pose model misses</div>
+      <div class="blk"><b>Body-frame normalisation</b>: cancels camera translation, roll and distance</div>
+      <div class="blk"><b>Kinematics</b>: 30-frame window, plus a 1D-CNN behaviour head</div>
+      <div class="blk"><b>Acoustics</b>: high-pass filter → event detection → <b>sound-source gate (AST)</b> → F0, HNR, inter-bark interval, plus a log-mel CNN</div>
+      <div class="blk"><b>Morphology calibration</b>: per-dog baselines</div>
+      <div class="blk dark"><b>Neuro-symbolic fusion</b>: ordered rules plus neural priors → state, alert, arousal, valence</div>
+      <div class="blk"><b>Optional VLM</b>: local Ollama model tags the scene trigger every ~3 s</div>
+    </div>
+  </div>
+  <p style="font-size:8.6pt;color:#6b7686">Figure 1. Split-compute pipeline. The same server also serves a browser HUD for testing with a webcam or a video file.</p>
+  <table>
+    <thead><tr><th>Layer</th><th>Component</th><th>Responsibility</th></tr></thead>
+    <tbody>
+      <tr><td>Capture</td><td>Glasses app (<code>MainActivity.kt</code>)</td><td>Camera frames, mic PCM and head roll, streamed over Wi-Fi. Only one frame is in flight at a time, so latency never builds up.</td></tr>
+      <tr><td>Feature extraction</td><td>Server (<code>dogsense/</code>)</td><td>Pose estimation, kinematic features, acoustic features, neural heads</td></tr>
+      <tr><td>Semantic fusion</td><td><code>dogsense/fusion.py</code></td><td>Rule-guided decision over posture, sound and scene context</td></tr>
+      <tr><td>Display</td><td><code>HudView.kt</code> / browser page</td><td>Low-latency monochrome telemetry</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="newpage">
+  <h2><span class="hex">4</span>Visual kinematics<span class="rule"></span></h2>
+  <h3>4.1 Pose estimation</h3>
+  <p>The base model is Ultralytics <b>YOLO26n-pose</b>, fine-tuned for 60 epochs on the Ultralytics <b>Dog-Pose</b> dataset (6,773 training and 1,703 validation images, 24 keypoints per dog). The keypoints cover paws, knees, elbows, tail base and tip, ear bases and tips, nose, chin, eyes, withers and throat.</p>
+  <p>Horizontal-flip augmentation is used with an explicit <code>flip_idx</code> map, so a flipped image keeps correct left and right labels.</p>
+  <p><b>Second stage.</b> The pose model misses many dogs that are facing the camera or partly hidden behind bars or fences. A general COCO detector (YOLO26s, "dog" class) therefore runs alongside it. Any dog it finds that the pose model missed is re-read by the pose model on a padded, zoomed crop. If no skeleton comes back, the dog still counts as seen and the HUD reports sound only for it.</p>
+  <h3>4.2 Ego-motion compensation</h3>
+  <p>The camera moves with the wearer's head, so screen coordinates cannot reveal subtle movements. Each skeleton is re-expressed in the <b>dog's own body frame</b>:</p>
+  <ul>
+    <li>Head roll from the gravity sensor is removed first.</li>
+    <li>The origin is the spine midpoint, the x-axis runs from tail base to withers, and the unit is one spine length. This cancels translation, roll and distance.</li>
+    <li>A second, gravity-aligned copy keeps spine pitch, so a play bow stays measurable.</li>
+    <li>When the spine is hidden or foreshortened (head-on view), the frame falls back to the visible skeleton's centroid and extent.</li>
+  </ul>
+  <h3>4.3 Temporal features (30-frame sliding window)</h3>
+  <table>
+    <thead><tr><th>Signal</th><th>How it is measured</th></tr></thead>
+    <tbody>
+      <tr><td>Tail wag</td><td>Tail-vector angle against the spine. Frequency from zero crossings, amplitude from spread. The left/right <b>bias</b> is reported only in rear or front views, mirrored for front views so that "right" is always the dog's right. Right bias is associated with approach and left bias with withdrawal (Quaranta et al., 2007).</td></tr>
+      <tr><td>Play bow</td><td>Elbows and withers dropped below the hindquarters relative to gravity, scored against this dog's baseline</td></tr>
+      <tr><td>Weight shift</td><td>Spine midpoint position between rear and front paws. Computed only in lateral views where "forward" is defined.</td></tr>
+      <tr><td>Ear carriage</td><td>Ear-tip vector projected onto the head axis (nose minus ear base): forward, neutral or pinned</td></tr>
+      <tr><td>Ear flick</td><td>Largest ear-carriage change within 200 ms</td></tr>
+      <tr><td>Stiffness</td><td>Low skeletal motion energy combined with a still tail</td></tr>
+    </tbody>
+  </table>
+  <p>A dilated <b>1D-CNN</b> (<code>TemporalPoseNet</code>) reads the same 30-frame window: 48 normalised coordinates plus 10 engineered features per frame. It outputs probabilities over six classes: relaxed, play bow, alert, defensive/stiff, anxious and excited.</p>
+  <h3>4.4 Breed morphology</h3>
+  <p>The system does not run a separate breed classifier. Instead, the first ~45 neutral frames of each dog set its baseline ear carriage, front/rear height and tail set. They also classify its morphology as prick, semi or drop ears and full, docked or curled tail. A French Bulldog's ears or a Greyhound's low tail then do not read as alert or fearful. The baselines reset after the dog has been out of view for about a second.</p>
+</section>
+
+<section class="newpage">
+  <h2><span class="hex">5</span>Bioacoustic analysis<span class="rule"></span></h2>
+  <h3>5.1 Front end</h3>
+  <ul>
+    <li><b>Wind:</b> a fourth-order 150 Hz high-pass filter, kept running across chunks, plus an adaptive noise-floor estimate.</li>
+    <li><b>Event detection:</b> energy above 4 × the noise floor, with short gaps bridged. The noise floor is the 20th percentile of 10 ms frame energy over the last 2 s, so detection is the same for any chunk size. An event that reaches the end of a chunk is held until it finishes, so long whines are not split into fake rapid barks.</li>
+    <li><b>Wearer's voice and other people:</b> every event passes a <b>sound-source gate</b>. The Audio Spectrogram Transformer fine-tuned on AudioSet classifies a 1.5 s window centred on the event, and events it scores as speech, shouting or whistling rather than dog are rejected. An ambiguous event within 0.8 s of confirmed speech counts as part of the same run. Two lighter checks still apply: chunks with <code>speech_prob &gt; 0.6</code> from the glasses are dropped, and long, moderately harmonic events in the adult speech range (85–255 Hz) are rejected. Sound readings arrive about 0.75 s after the sound, while the gate's window fills.</li>
+  </ul>
+  <h3>5.2 Acoustic metrics per event</h3>
+  <table>
+    <thead><tr><th>Metric</th><th>Method</th></tr></thead>
+    <tbody>
+      <tr><td>Fundamental frequency (F0)</td><td>Normalised-autocorrelation peak with parabolic interpolation over voiced 64 ms frames. An octave guard takes the shortest period within 10 % of the best correlation, so the tracker does not lock onto a multiple of the true period. Atonal events (HNR &lt; 3 dB) use the spectral peak instead, because F0 is undefined for a growl.</td></tr>
+      <tr><td>Harmonics-to-noise ratio</td><td>Boersma (1993) autocorrelation method, median over 40 ms frames, so pitch glides do not smear it</td></tr>
+      <tr><td>Inter-bark interval and burst rate</td><td>Event onsets over a 4 s window</td></tr>
+      <tr><td>Bands</td><td>Pitch: low &lt; 300 Hz, mid, high &gt; 600 Hz. Tonality: harsh &lt; 3 dB, mixed, tonal &gt; 9 dB.</td></tr>
+    </tbody>
+  </table>
+  <h3>5.3 Call type</h3>
+  <p>Call type is decided in two ways and combined:</p>
+  <ul>
+    <li><b>Acoustic rules</b> (motivation-structural):
+      <ul>
+        <li>Low F0 with low harmonicity reads as a growl or warning.</li>
+        <li>High F0 with high tonality reads as a whine.</li>
+        <li>Rapid mid-range bursts read as play or excitement.</li>
+      </ul>
+    </li>
+    <li><b>VocalCNN</b>: a 4-block CNN on 64-band log-mel spectrograms of 1 s clips, with six classes: none, growl, alert bark, play bark, whine and howl.</li>
+  </ul>
+  <p>The network's label is used only when its confidence is above 0.6. Otherwise the acoustic rules decide.</p>
+</section>
+
+<section>
+  <h2><span class="hex">6</span>Neuro-symbolic fusion<span class="rule"></span></h2>
+  <p>Pure neural classification invents intent when signals conflict. DogSense resolves conflicts with an <b>ordered, deterministic rule base</b>, and the first rule that matches wins:</p>
+  <table>
+    <thead><tr><th>#</th><th>Condition</th><th>HUD state</th><th>Alert</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Play bow &gt; 0.5 and not a threat posture. Overrides any growl.</td><td>Play Solicitation</td><td>no</td></tr>
+      <tr><td>2</td><td>Stiff &gt; 0.7, weight forward, and the scene trigger is a toy, food or other resource</td><td>Resource Guarding</td><td>yes</td></tr>
+      <tr><td>3</td><td>Stiff, weight forward, and a growl (or low-pitched bark)</td><td>Defensive Warning</td><td>yes</td></tr>
+      <tr><td>4</td><td>Stiff and weight forward, no sound</td><td>High Arousal / Fixated</td><td>yes</td></tr>
+      <tr><td>5</td><td>Ears pinned and weight back, or left-biased wag, or a whine with tense posture</td><td>Anxious / Appeasing</td><td>no</td></tr>
+      <tr><td>6</td><td>Whine with a loose body</td><td>Seeking / Distress Call</td><td>no</td></tr>
+      <tr><td>7</td><td>Wag &gt; 1.5 Hz, loose body, not left-biased</td><td>Friendly / Excited</td><td>no</td></tr>
+      <tr><td>8</td><td>Bark, or ears forward with moderate stiffness</td><td>Alert / Vigilant</td><td>no</td></tr>
+      <tr><td>9</td><td>Dog tracked, nothing else fires</td><td>Relaxed</td><td>no</td></tr>
+    </tbody>
+  </table>
+  <p>The two example rules from the concept are implemented directly:</p>
+  <pre>Play bow (Δy elbows ≫ Δy hips) ∧ growl (low F0)            ⟹  Play Solicitation (safe)
+Stiff tail (ω_wag ≈ 0) ∧ forward weight ∧ low F0, harsh     ⟹  Defensive Warning (alert)</pre>
+  <p><b>Continuous gauges.</b> Each rule carries a (valence, arousal) target. This target is blended with the pose network's class priors (weight 0.25) and the audio class prior (weight 0.15); the audio weight is dropped when a play bow overrides a growl. The result is boosted by burst rate and ear flicks and smoothed with an exponential moving average (α = 0.35) for a calm display.</p>
+  <p><b>Scene context.</b> If a local vision-language model is running in Ollama (for example <code>qwen2.5vl:7b</code>), a downsampled frame is tagged every ~3 s, off the critical path. Example tags are Approaching Stranger, Other Dog, Resource/Toy and Leash Tension. The tag feeds rule 2 and shows as "TRIGGER:" on the HUD. If no VLM is reachable, it backs off for a minute.</p>
+</section>
+
+<section class="newpage">
+  <h2><span class="hex">7</span>The monochrome HUD<span class="rule"></span></h2>
+  <p>The Rokid waveguide shows a single green channel, and black is see-through. A red-versus-green alert is impossible, so urgency is shown through form:</p>
+  <ul>
+    <li><b>Target reticle:</b> four corner brackets around the dog, so the dog itself stays visible. During an alert the brackets thicken from 3 to 6 px and blink at about 3 Hz.</li>
+    <li><b>Arousal gauge:</b> <code>AROUSAL [||||||....] 65%</code>, from calm to hyper-stimulated.</li>
+    <li><b>Valence gauge:</b> <code>VALENCE [- - - | + + +]</code>, from defensive/distressed to playful/relaxed.</li>
+    <li><b>Caption block:</b> <code>STATE: Play Solicitation (Bow + play growl)</code> normally. An alert gets a boxed <code>ALERT: Defensive Warning</code> with an action line.</li>
+    <li><b>Cue line and status:</b> the cues that fired (for example "stiff | weight fwd | growl 180Hz"), the morphology calibration state and the round-trip latency.</li>
+    <li><b>Debug skeleton:</b> the 24-point skeleton overlay. Toggle it with the temple touchpad or the browser checkbox.</li>
+  </ul>
+  <figure><img src="hud_preview.png" alt="HUD preview"><figcaption>Figure 2. HUD rendered by the desktop simulator over a Dog-Pose validation image, with simulated head sway and the skeleton overlay on. The frame is dimmed to approximate see-through optics.</figcaption></figure>
+</section>
+
+<section class="newpage">
+  <h2><span class="hex">8</span>Models and training results<span class="rule"></span></h2>
+  <p>All models were trained locally on the RTX 3090. Weights are in <code>models/</code>.</p>
+  <table>
+    <thead><tr><th>Model</th><th>Training data</th><th>Result (held-out data)</th><th>File</th></tr></thead>
+    <tbody>
+      <tr><td>Dog pose (YOLO26n-pose), 60 epochs</td><td>Dog-Pose, real images</td><td>Box mAP50 0.991 · pose mAP50 0.936 · pose mAP50-95 0.509</td><td><code>dog_pose.pt</code>, <code>.onnx</code> (12.9 MB)</td></tr>
+      <tr><td>TemporalPoseNet, 40 epochs</td><td>30,000 synthetic sequences</td><td>98.6 % accuracy on synthetic data</td><td><code>temporal_pose.pt</code></td></tr>
+      <tr><td>VocalCNN, 30 epochs</td><td>12,000 synthetic calls</td><td>99.8 % accuracy on synthetic data</td><td><code>vocal_cnn.pt</code></td></tr>
+    </tbody>
+  </table>
+  <div class="note warn"><b>The temporal and vocal results do not measure real-world accuracy.</b> No public dataset pairs behaviour labels with Dog-Pose keypoint sequences. The dog-audio datasets (DMAD, CREMD) need manual download and licence acceptance. Both heads were therefore pre-trained on procedural data, passed through the same featuriser as live data with random viewpoint, head motion, scale, occlusion and breed morphology. Their scores only show that the networks learned the designed signatures. This is why the rule base, not the networks, makes the decision.</div>
+  <h3>8.1 Synthetic data generators (<code>training/synth.py</code>)</h3>
+  <ul>
+    <li><b>Kinematics:</b> a side-view canonical skeleton deformed per behaviour, varying tail lift, wag frequency, amplitude and bias, bow depth, lean, ear angle, jitter and bounce. It is then rendered with breed variation (ear type, tail length including docked, leg length) and camera effects (yaw foreshortening, drift, zoom, roll, detector noise, dropped keypoints).</li>
+    <li><b>Audio:</b> harmonic-stack calls with set F0 ranges, glides, harmonicity and growl amplitude modulation, mixed with wind rumble, hiss and speech-like hum.</li>
+  </ul>
+  <h3>8.2 Fine-tuning on real data</h3>
+  <pre>python training/train_temporal.py --videos data/clips --init models/temporal_pose.pt
+#   data/clips/&lt;relaxed|play_bow|alert|defensive_stiff|anxious|excited&gt;/*.mp4
+python training/train_audio.py --data data/audio --init models/vocal_cnn.pt
+#   data/audio/&lt;none|growl|bark_alert|bark_play|whine|howl&gt;/*.wav</pre>
+</section>
+
+<section class="newpage">
+  <h2><span class="hex">9</span>Running the system<span class="rule"></span></h2>
+  <h3>9.1 Server</h3>
+  <pre>pip install -r requirements.txt
+python -m server.app --host 0.0.0.0 --port 8765      # add --vlm qwen2.5vl:7b if Ollama is running</pre>
+  <p><code>GET /health</code> reports the device and which models loaded. Measured round trip on the RTX 3090 over localhost: <b>37.8 ms median, 82.7 ms p90</b> per frame.</p>
+  <h3>9.2 Browser HUD (no glasses needed)</h3>
+  <p>Open <code>http://localhost:8765/</code>. Choose <b>Start webcam + mic</b> or <b>Open video file</b>, and tick <b>skeleton</b> for the keypoint overlay. The page uses the same wire protocol as the glasses and draws the same HUD. It processes live and saves nothing.</p>
+  <h3>9.3 Desktop simulator (saves video)</h3>
+  <pre>python tools/simulate.py --video my_dog.mp4 --wav my_dog.wav --skeleton --out hud_output.mp4</pre>
+  <p>For best results, film 10–30 s of the dog at eye height, side-on, with the whole dog in frame and sound on. Allow about 3 s for calibration.</p>
+  <h3>9.4 Glasses app</h3>
+  <pre>cd android
+./gradlew assembleDebug -PserverUrl=ws://&lt;PC LAN IP&gt;:8765/ws
+adb install app/build/outputs/apk/debug/app-debug.apk</pre>
+  <p>Behind a TLS-inspecting proxy, set <code>GRADLE_OPTS=-Djavax.net.ssl.trustStoreType=Windows-ROOT</code>. Python uses the <code>truststore</code> package for the same reason.</p>
+</section>
+
+<section>
+  <h2><span class="hex">10</span>Interfaces and file layout<span class="rule"></span></h2>
+  <h3>10.1 Wire protocol (WebSocket <code>/ws</code>, little-endian)</h3>
+  <table>
+    <thead><tr><th>Message</th><th>Layout</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Video frame</td><td><code>0x01 | f64 unix_ts | f32 head_roll_rad | JPEG</code></td><td>The server answers each frame. Frames are dropped while the GPU is busy.</td></tr>
+      <tr><td>Audio chunk</td><td><code>0x02 | f32 speech_prob | PCM16 mono 16 kHz</code></td><td>Telemetry is also pushed after audio, at up to 10 Hz</td></tr>
+      <tr><td>Telemetry (JSON)</td><td colspan="2"><code>state, detail, alert, trigger, cues[], arousal 0..1, valence −1..1, confidence, box[4], kpts[24][3], morph, kin{}, audio{}, pose_probs{}, latency_ms</code></td></tr>
+    </tbody>
+  </table>
+  <h3>10.2 Repository</h3>
+  <table>
+    <thead><tr><th>Path</th><th>Contents</th></tr></thead>
+    <tbody>
+      <tr><td><code>dogsense/</code></td><td><code>keypoints</code>, <code>kinematics</code>, <code>acoustics</code>, <code>models</code>, <code>morphology</code>, <code>fusion</code>, <code>vlm</code>, <code>pipeline</code></td></tr>
+      <tr><td><code>server/</code></td><td><code>app.py</code> (FastAPI: <code>/</code>, <code>/health</code>, <code>/ws</code>) and <code>static/index.html</code> (browser HUD)</td></tr>
+      <tr><td><code>training/</code></td><td><code>train_pose.py</code>, <code>train_temporal.py</code>, <code>train_audio.py</code>, <code>synth.py</code>, <code>dog-pose-flip.yaml</code></td></tr>
+      <tr><td><code>tools/</code></td><td><code>simulate.py</code> (desktop HUD) and <code>ws_client_test.py</code> (glasses emulator)</td></tr>
+      <tr><td><code>android/</code></td><td><code>MainActivity</code>, <code>DogSenseClient</code>, <code>HudView</code>, <code>Telemetry</code>, <code>SpeechGate</code></td></tr>
+      <tr><td><code>models/</code>, <code>tests/</code>, <code>runs/</code></td><td>Trained weights, the pytest suite and the training logs</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="newpage">
+  <h2><span class="hex">11</span>Verification<span class="rule"></span></h2>
+  <table>
+    <thead><tr><th>Check</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>Unit tests (<code>pytest tests</code>), including the sound-only labelling rule and the sound-source gate (human runs rejected, dog calls kept): body-frame invariance to rotation, scale and shift; kinematic signatures per behaviour; play bow overrides growl; stiff + forward + growl gives a warning; resource trigger gives guarding; F0 and HNR accuracy; growl and whine pitch bands through the streaming analyser</td><td>9 / 9 pass</td></tr>
+      <tr><td>End-to-end over the real protocol (<code>ws_client_test.py</code>, Dog-Pose validation images plus synthetic growl)</td><td>Dog detected in every frame; growl identified at 181–197 Hz; median 37.8 ms</td></tr>
+      <tr><td>Desktop simulator on a 60-frame head-sway clip</td><td>HUD renders; state settles to Relaxed (Figure 2)</td></tr>
+      <tr><td>Android build (<code>assembleDebug</code>)</td><td>Builds successfully</td></tr>
+      <tr><td>Browser HUD at <code>/</code></td><td>Page loads and connects. Webcam and file input not yet exercised.</td></tr>
+      <tr><td>Rokid glasses footage, processed offline (section 12)</td><td>Done. Live streaming from the glasses <b>not yet tested</b>.</td></tr>
+    </tbody>
+  </table>
+  <p>Defects found and fixed during verification:</p>
+  <ul>
+    <li>Long vocalisations were split at 100 ms chunk boundaries and read as rapid barks.</li>
+    <li>Per-chunk spectral gating removed sustained calls. The streaming path now uses a running high-pass filter.</li>
+    <li>Growl pitch was unstable. It now uses the spectral peak.</li>
+    <li>Head-on views failed body-frame normalisation. A centroid fallback was added.</li>
+    <li>Weight shift was reported in views where it is meaningless. It is now gated to lateral views.</li>
+    <li>A dog that was visible but still warming up was labelled "not in view".</li>
+  </ul>
+  <p>Section 12 lists four further defects found with real glasses footage, all fixed in this version.</p>
+</section>
+
+<section class="newpage">
+  <h2><span class="hex">12</span>Field test with Rokid glasses footage<span class="rule"></span></h2>
+  <p>The first real-world test used a 61-second clip filmed through Rokid glasses on 22 October 2026. The clip shows two dogs in a garden, with barking and whining. It was processed offline by the desktop simulator, which runs the same pipeline and models as the live server.</p>
+  <table class="kv">
+    <thead><tr><th>Item</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Source</td><td>2400 × 1800 H.264 at 30 fps, rotated 90°, with AAC audio. Converted to 960 × 1280 upright video and 16 kHz mono audio.</td></tr>
+      <tr><td>Command</td><td><code>simulate.py --video dog.mp4 --wav dog.wav --skeleton --out … --log telemetry.jsonl</code></td></tr>
+      <tr><td>Processing time</td><td>1,830 frames in about 100 s on the RTX 3090 (offline, every frame processed)</td></tr>
+      <tr><td>Outputs</td><td><code>DogSense_HUD_test.mp4</code> (HUD video with original sound) and <code>data/test/telemetry.jsonl</code> (per-frame readings)</td></tr>
+    </tbody>
+  </table>
+  <figure style="width:78%;margin-left:auto;margin-right:auto"><img src="fieldtest.jpg" alt="Field test frames"><figcaption>Figure 3. HUD frames from the field test at 7, 10, 16, 28, 33 and 52 s. Note the two missed dogs at 7 s and the false detection on a tree at 52 s.</figcaption></figure>
+  <h3>12.1 What the system reported</h3>
+  <table>
+    <thead><tr><th>Time</th><th>Main HUD state</th><th>Cues measured</th></tr></thead>
+    <tbody>
+      <tr><td>6–7 s, 12 s, 30–45 s</td><td>Alert / Vigilant</td><td>Alert-type barks at about 270–490 Hz, and higher calls</td></tr>
+      <tr><td>24–37 s, 48 s</td><td>Seeking / Distress Call</td><td>Tonal whines at about 1,200–1,600 Hz</td></tr>
+      <tr><td>9 s, 15 s, 54 s</td><td>Relaxed</td><td>Tail wag 1.5–3 Hz, ears forward or pinned</td></tr>
+      <tr><td>51 s</td><td>Friendly / Excited</td><td>Wagging with barking</td></tr>
+      <tr><td>Whole clip</td><td>No alerts</td><td>No stiff, forward-weighted posture with a growl was seen</td></tr>
+    </tbody>
+  </table>
+  <p>A dog was first tracked in 522 of 1,830 frames (28 %). After the two-stage detector was added (section 12.3), the same clip was re-processed and a dog was tracked in <b>1,031 of 1,830 frames (56 %)</b>. For much of the clip the camera points at the garden, gate or plants, so the remaining "No dog" frames are mostly correct. The labels have not yet been checked against a person's judgement of what the dogs were doing.</p>
+  <h3>12.2 Defects found and fixed</h3>
+  <table>
+    <thead><tr><th>Defect</th><th>Cause</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td>False "Play Solicitation (bow)"</td><td>A dog walking toward the camera with its head down looks front-low because of perspective. A dog lying down also has a low front.</td><td>A bow now needs a side view (withers and tail base visible) and visibly standing hind legs (rear paws at least 0.3 spine lengths below the hips).</td></tr>
+      <tr><td>Stale readings</td><td>After the detector lost the dog, the last box and posture stayed on the HUD for up to 15 frames.</td><td>Posture and the reticle are shown only within 3 frames of a real detection. Otherwise the state falls back to sound only.</td></tr>
+      <tr><td>"Ear flick" almost constant</td><td>Keypoint jitter exceeded the 0.35 threshold.</td><td>Threshold raised to 0.6.</td></tr>
+      <tr><td>Bogus cue "none −5968Hz"</td><td>Parabolic peak interpolation divided by a near-zero or positive curvature.</td><td>The interpolation offset is clamped to ±0.5 samples and applied only at true peaks. No sound cue is shown for the "none" class.</td></tr>
+    </tbody>
+  </table>
+  <p>All 7 unit tests still pass after the fixes, and the clip was re-processed to confirm them: the bow and stale-state false readings are gone.</p>
+  <h3>12.3 Head-on dogs and a gate between the dogs and the camera</h3>
+  <p>Two more clips were filmed through the glasses to test the hardest viewing conditions:</p>
+  <ul>
+    <li><b>IMG_2389</b>, 31 s: mostly cleaning a pool, with the dogs barking out of view and briefly seen through a bamboo fence.</li>
+    <li><b>IMG_2390</b>, 18 s: two dogs facing the camera behind a barred gate, barking. It was filmed at 120 fps and converted to 30 fps.</li>
+  </ul>
+  <figure style="width:78%;margin-left:auto;margin-right:auto"><img src="fieldtest_gate.jpg" alt="Gate test frames"><figcaption>Figure 4. IMG_2390 after the fixes, at 4, 7, 10, 12, 14 and 16.5 s. The reticle stays on a dog through the gate bars, but only one of the two dogs is followed.</figcaption></figure>
+  <table>
+    <thead><tr><th>Measure</th><th>Before</th><th>After</th></tr></thead>
+    <tbody>
+      <tr><td>Frames with a dog tracked, IMG_2390 (gate)</td><td>35 %</td><td><b>79 %</b></td></tr>
+      <tr><td>Frames with a dog tracked, first field clip (garden, two dogs)</td><td>28 %</td><td><b>56 %</b></td></tr>
+      <tr><td>Frames with a dog tracked, IMG_2389 (fence, dogs mostly out of view)</td><td>3 %</td><td>6 %</td></tr>
+      <tr><td>Detector check on gate frames from 5 s on: pose model alone vs COCO detector</td><td colspan="2">28 % vs 70 % of frames. The pose model then read 73 % of the detector's crops, with a median of 14 visible keypoints.</td></tr>
+      <tr><td>"Ear flick" cue, IMG_2390 seconds 6–9</td><td>82 of 90 frames</td><td>1 of 90 frames</td></tr>
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>Defect</th><th>Cause</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td>Dogs behind the gate not detected</td><td>The pose model loses dogs that face the camera or are broken up by bars</td><td>Two-stage detection: a COCO dog detector, then the pose model on a zoomed crop (section 4.1)</td></tr>
+      <tr><td>"Alert / Vigilant" shown for dogs out of view</td><td>Bark rules fired without any posture</td><td>Without readable posture the HUD reports only what it heard, for example "Barking (dog not in view)" or "Barking (posture unclear)", and never a behavioural state. This is covered by a new unit test.</td></tr>
+      <tr><td>"Ear flick" still near-constant head-on</td><td>Keypoint jitter in frontal views exceeded the fixed threshold</td><td>Median-of-3 smoothing. A flick must now be a 200 ms jump greater than four times the track's own jitter.</td></tr>
+    </tbody>
+  </table>
+  <p>In IMG_2390 the dogs were shown as "Alert / Vigilant" (ears forward, alert barks at about 425–1,300 Hz) while barking at the gate, and as "Relaxed" between barks. No alerts fired. These readings have not yet been checked against a person's judgement.</p>
+  <h3>12.4 The wearer's own voice</h3>
+  <p>Reviewing the first clip, the wearer pointed out that the loud "hey, hey, hey" at about 5 s was them telling the dogs to stop. The HUD had reported it as alert barking. The existing filters missed it: each "hey" was short, loud and harmonic, so it did not match the "long speech" rule, and it was as loud as the barks of a nearby dog.</p>
+  <figure style="width:42%;margin-left:auto;margin-right:auto"><img src="voice_vs_bark.png" alt="Voice vs bark spectrograms"><figcaption>Figure 5. Spectrograms from the field clips. From top: the wearer's "hey, hey, hey"; a whistle (one pure tone); a real bark with its dense stack of arched harmonics; barking at the gate.</figcaption></figure>
+  <p>A pretrained Audio Spectrogram Transformer (AudioSet, 527 sound classes) was tested on the clip's loudest events. It scored the three "hey"s, a whistle at 34.7 s and several later sounds as human speech or whistling, and the 7.8 s bark as dog. Several "dog sounds" in the first test were therefore the wearer.</p>
+  <table>
+    <thead><tr><th>Finding while building the gate</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td>AST verdicts on short (0.6 s) snippets were unstable; the same "hey" scored human or dog depending on the framing</td><td>Window lengths of 0.6, 1.0, 1.5 and 2.0 s were compared on ten labelled events. A 1.5 s centred window made no wrong calls; the two "hey"s it was unsure of are caught by the speech-run rule.</td></tr>
+      <tr><td>Live-sized audio chunks (33 ms) finalised events with almost no surrounding audio, so the gate could not judge them</td><td>Events wait until their full 1.5 s window has arrived, then are cut from the rolling buffer.</td></tr>
+      <tr><td>Event detection gave different results for 33 ms and 100 ms chunks (14 vs 31 events)</td><td>The noise floor is now estimated from the last 2 s of audio. Both chunk sizes now give the same results on all three clips.</td></tr>
+      <tr><td>A synthetic whine measured at 200 Hz instead of about 1 kHz (sub-harmonic error), which put it in the speech range</td><td>Octave guard in the pitch tracker (section 5.2)</td></tr>
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>Result after the fixes</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>First clip, 5–7 s ("hey, hey, hey")</td><td>No bark cues; the HUD reads the dogs' posture (Relaxed / Friendly)</td></tr>
+      <tr><td>First clip, 30–36 s (whistle and speech)</td><td>No longer reported as whining or barking</td></tr>
+      <tr><td>Human sounds rejected per clip</td><td>First clip 44 · IMG_2389 2 · IMG_2390 4. The real barks are kept, for example 7.8 s in the first clip and the off-screen barking in IMG_2389.</td></tr>
+    </tbody>
+  </table>
+  <p>This correction came from the person wearing the glasses, who knew what had actually happened. It shows why the next step is labelling the clips against what really happened.</p>
+</section>
+
+<section>
+  <h2><span class="hex">13</span>Limitations and open issues<span class="rule"></span></h2>
+  <ul>
+    <li><b>Behaviour and audio heads are synthetic-only.</b> Real-world accuracy is unknown until they are fine-tuned on labelled clips.</li>
+    <li><b>Pose quality varies by view.</b> Pose mAP50-95 is 0.51. In some head-on images the withers, eyes and tail are missed, which weakens posture cues.</li>
+    <li><b>Tail asymmetry</b> is only reliable in rear or front views. Side views report frequency and amplitude only.</li>
+    <li><b>Voice filtering depends on a general-purpose classifier.</b> The AST gate was checked against the wearer's voice and the dogs in three clips. It is not trained on this wearer, these dogs or the glasses' microphone, and short ambiguous sounds can still slip through. The Rokid SDK's own VAD score should be wired in where the firmware exposes it. Sound direction (bursts from the lower visual field) is not yet used.</li>
+    <li><b>Rokid integration assumes Android-capable glasses.</b> Models that stream through the phone-side SDK need their frames and PCM routed into <code>DogSenseClient</code>.</li>
+    <li><b>Single dog.</b> Tracking follows one dog (largest first, then highest overlap with its previous box). Barks cannot yet be attributed to a particular dog when two are present.</li>
+    <li><b>Detector errors in the field.</b> In the first field test the detector missed two dogs in clear view and once boxed a tree. The second-stage detector recovers many misses (section 12.3), but fine-tuning on Rokid footage, including gates and fences, is still needed.</li>
+    <li><b>Head-on views.</b> Play bow, weight shift and tail-wag direction need a side or rear view, so for dogs facing the wearer the HUD relies more on ears and sound.</li>
+    <li><b>Latency</b> is measured on localhost. Wi-Fi adds transport delay, and the timestamp comparison assumes the device and server clocks are synchronised.</li>
+    <li>The system describes behaviour; it is not a substitute for a qualified trainer or behaviourist.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="hex">14</span>Next steps<span class="rule"></span></h2>
+  <ul>
+    <li><b>Label the field test.</b> Mark what the dogs were actually doing in the 61-second clip, and compare it with <code>telemetry.jsonl</code> to get a first real accuracy figure.</li>
+    <li><b>Collect real footage.</b> Film 10–30 s side-on clips with sound and label them into the six behaviour classes. Then fine-tune <code>temporal_pose.pt</code> and <code>vocal_cnn.pt</code> and measure accuracy on a held-out set of different dogs.</li>
+    <li><b>Test on hardware.</b> Install on the Rokid glasses, measure Wi-Fi latency and HUD legibility outdoors, and wire in the SDK VAD.</li>
+    <li><b>Improve pose.</b> Train longer or use a larger pose model, and add head-on and rear-view examples from real walks.</li>
+    <li><b>Turn on scene context.</b> Pull a VLM into Ollama and evaluate trigger-tag accuracy.</li>
+    <li><b>Optional.</b> Move pose inference on-device using the exported ONNX model, add recording to the browser HUD, and support multi-dog tracking.</li>
+  </ul>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+# Large / private data (not published)
+datasets/
+data/
+recordings/
+runs/
+weights/
+*.log
+*.wav
+*.MOV
+
+# Base weights that Ultralytics downloads on demand
+models/yolo26n-pose.pt
+models/yolo26s.pt
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Android build output and machine-local config
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+*.iml
+
+# Documentation build intermediates (the merged PDF is kept)
+docs/build/cover.pdf
+docs/build/body.pdf
