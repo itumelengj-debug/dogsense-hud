@@ -1,0 +1,16 @@
+What if your glasses could read your dog? 🐕
+⠀
+I built DogSense HUD, a Symbolic Synapse prototype for the Rokid RV101 smart glasses. It watches a dog's body language, listens to its barks, and shows what it measures right on the lens.
+⠀
+◈ 24 tracking points on the dog's body
+◈ Pitch and rhythm of every bark
+◈ My own voice filtered out. Yes, it once thought my "hey, hey, hey!" was barking 😅
+◈ Clear rules, no black box. Every reading shows why
+⠀
+Tested on my own two dogs, in the garden and through the gate.
+⠀
+Measured, never imagined.
+⠀
+Full code and the build story: link in bio
+⠀
+#SymbolicSynapse #DogSenseHUD #SmartGlasses #Rokid #AugmentedReality #AI #ComputerVision #TechForGood #DogsOfInstagram #DogLovers #MachineLearning #MadeInSouthAfrica #BuildInPublic
